@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wsl-manager"
+version = "0.1.0"
+description = "WSL Manager: gestion de distros WSL con GUI (tray), CLI, API REST y servidor MCP"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "ttkbootstrap>=1.10",
+    "pystray>=0.19",
+    "Pillow>=10",
+    "psutil>=5.9",
+    "pydantic>=2.6",
+    "pyyaml>=6.0",
+    "typer>=0.12",
+    "winotify>=1.1",
+]
+
+[project.optional-dependencies]
+api = [
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "httpx>=0.27",
+    "pydantic-settings>=2.2",
+]
+mcp = ["mcp>=1.0"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+wsl-manager = "src.cli.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "integration: pruebas que requieren WSL real (deseleccionar con -m 'not integration')",
+]

@@ -1,0 +1,1 @@
+# GUI: tray + ventana principal

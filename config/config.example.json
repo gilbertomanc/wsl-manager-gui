@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "windows": {
+    "wsl_exe": "wsl.exe"
+  },
+  "distros": {
+    "defaults": {
+      "auto_start": false,
+      "delay_s": 0
+    },
+    "instances": [
+      {
+        "name": "ubuntu-dev",
+        "group": "dev",
+        "auto_start": false,
+        "delay_s": 5,
+        "depends_on": [],
+        "quick_actions": []
+      }
+    ]
+  },
+  "resources": {
+    "global": {
+      "memory_gb": null,
+      "processors": null,
+      "swap_gb": null,
+      "auto_memory_reclaim": null,
+      "sparse_vhd": null
+    },
+    "per_distro": []
+  },
+  "alerts": {
+    "memory_percent": 85,
+    "distro_stopped_unexpected": true,
+    "check_interval_seconds": 15
+  },
+  "snapshots": {
+    "enabled": true,
+    "retention_days": 14,
+    "target_dir": null
+  },
+  "scheduler": {
+    "tasks": []
+  },
+  "profiles": {
+    "active": null,
+    "items": []
+  },
+  "ui": {
+    "start_minimized": false,
+    "close_to_tray": true,
+    "theme": "darkly",
+    "language": "es",
+    "log_level": "INFO",
+    "logs_dir": null,
+    "refresh_interval_seconds": 2,
+    "metrics_retention_days": 30,
+    "web_panel_enabled": false
+  },
+  "api": {
+    "enabled": false,
+    "host": "127.0.0.1",
+    "port": 8791,
+    "auth": {
+      "mode": "none",
+      "rate_limit_per_minute": 120
+    },
+    "allowed_ips": ["127.0.0.1"]
+  },
+  "mcp": {
+    "enabled": false,
+    "transport": "stdio",
+    "port": 8792,
+    "token_required": false
+  },
+  "on_close": {
+    "stop_distros": false
+  }
+}
