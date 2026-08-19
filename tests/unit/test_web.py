@@ -1,4 +1,4 @@
-"""Tests del panel web local (M7) con TestClient y providers mockeados.
+﻿"""Tests del panel web local (M7) con TestClient y providers mockeados.
 
 El panel exige clave (Authorization: Bearer) en TODOS los /api/*.
 """
@@ -7,6 +7,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
+import pytest
 from fastapi.testclient import TestClient
 
 from src.core.config import ConfigStore
@@ -19,10 +20,16 @@ PASSWORD = "secreto"
 AUTH = {"Authorization": f"Bearer {PASSWORD}"}
 
 
-def _ctx(tmp_path, password: str = PASSWORD):
+@pytest.fixture
+def ctx(tmp_path, monkeypatch):
+    # Aisla el SecretsStore (DPAPI) para que los tests no vean los secrets
+    # reales del usuario en %APPDATA%.
+    monkeypatch.setattr(
+        "src.utils.secrets.secrets_path", lambda: tmp_path / "secrets.json"
+    )
     store = ConfigStore(tmp_path / "config.json")
     cfg = store.load()
-    cfg.ui.web_panel_password = password
+    cfg.ui.web_panel_password = PASSWORD
     wsl = MagicMock()
     wsl.list_distros.return_value = [Distro(name="ubuntu-dev", state="Running", version=2)]
     wsl.get_ip.return_value = "172.18.0.2"
@@ -36,24 +43,24 @@ def _ctx(tmp_path, password: str = PASSWORD):
     return SimpleNamespace(store=store, config=cfg, metrics=ms, bus=bus, wsl=wsl, resources=resources)
 
 
-def test_index_html_public(tmp_path):
+def test_index_html_public(ctx):
     """El HTML del dashboard es publico; la clave protege los /api/*."""
-    client = TestClient(create_web_app(_ctx(tmp_path)))
+    client = TestClient(create_web_app(ctx))
     r = client.get("/")
     assert r.status_code == 200
     assert "WSL Manager" in r.text
     assert "login" in r.text  # el JS pide la clave
 
 
-def test_api_requires_password(tmp_path):
-    client = TestClient(create_web_app(_ctx(tmp_path)))
+def test_api_requires_password(ctx):
+    client = TestClient(create_web_app(ctx))
     assert client.get("/api/status").status_code == 401
     assert client.get("/api/status", headers={"Authorization": "Bearer malo"}).status_code == 401
     assert client.post("/api/distros/ubuntu-dev/start").status_code == 401
 
 
-def test_api_status_authed(tmp_path):
-    client = TestClient(create_web_app(_ctx(tmp_path)))
+def test_api_status_authed(ctx):
+    client = TestClient(create_web_app(ctx))
     r = client.get("/api/status", headers=AUTH)
     assert r.status_code == 200
     data = r.json()
@@ -62,15 +69,15 @@ def test_api_status_authed(tmp_path):
     assert data["distros"][0]["ram_percent"] == 25.0
 
 
-def test_api_metrics_authed(tmp_path):
-    client = TestClient(create_web_app(_ctx(tmp_path)))
+def test_api_metrics_authed(ctx):
+    client = TestClient(create_web_app(ctx))
     r = client.get("/api/metrics", headers=AUTH)
     assert r.status_code == 200
     assert r.json()["metrics"][0]["ram_used_mb"] == 2048
 
 
-def test_api_actions_authed(tmp_path):
-    client = TestClient(create_web_app(_ctx(tmp_path)))
+def test_api_actions_authed(ctx):
+    client = TestClient(create_web_app(ctx))
     assert client.post("/api/distros/ubuntu-dev/start", headers=AUTH).status_code == 200
     assert client.post("/api/distros/ubuntu-dev/stop", headers=AUTH).status_code == 200
     assert client.post("/api/shutdown", headers=AUTH).status_code == 200

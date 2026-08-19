@@ -40,7 +40,15 @@ git clone https://github.com/gilbertomanc/wsl-manager-gui
 cd wsl-manager-gui
 python -m venv .venv
 .venv\Scripts\activate
+
+# Base (GUI + CLI): 
 pip install -e .
+
+# Con panel web + API REST (recomendado):
+pip install -e ".[api]"
+
+# Para desarrollo y tests (añade pytest):
+pip install -e ".[api,dev]"
 ```
 
 > **¿No quieres tocar código?** Usa los ejecutables ya compilados de la carpeta
@@ -131,6 +139,7 @@ wsl-manager mcp serve               # servidor stdio (JSON-RPC)
 ## Tests
 
 ```bash
+pip install -e ".[api,dev]"     # asegura pytest + dependencias de la API
 .venv\Scripts\python -m pytest tests -q
 ```
 
