@@ -139,10 +139,20 @@ setInterval(load, 3000);
 """
 
 
+def _web_panel_password(cfg) -> str:
+    """Clave del panel: primero SecretsStore (DPAPI), fallback a config (tests/legacy)."""
+    from src.utils import secrets as sec
+
+    store = sec.SecretsStore()
+    if store.check("web_panel_password"):
+        return store.get("web_panel_password")
+    return cfg.ui.web_panel_password
+
+
 def _require_auth(request: Request):
     """Dependencia: todos los /api/* exigen 'Authorization: Bearer <clave>'."""
     cfg = request.app.state.ctx.config  # type: ignore[attr-defined]
-    password = cfg.ui.web_panel_password
+    password = _web_panel_password(cfg)
     header = request.headers.get("Authorization", "")
     if not password or not hmac.compare_digest(header, f"Bearer {password}"):
         raise HTTPException(status_code=401, detail="clave requerida")

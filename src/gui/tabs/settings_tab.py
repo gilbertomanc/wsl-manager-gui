@@ -145,7 +145,12 @@ class SettingsTab(ttk.Frame):
         cfg.ui.web_panel_port = web_port
         cfg.ui.web_panel_bind = self.web_bind_var.get().strip() or "127.0.0.1"
         if web_pw:
-            cfg.ui.web_panel_password = web_pw
+            # La clave se guarda SOLO en el SecretsStore (DPAPI), no en claro
+            # en config.json. Si llego hasta aqui sin web_pw, se conserva la existente.
+            from src.utils import secrets as sec
+
+            sec.SecretsStore().set("web_panel_password", web_pw)
+            cfg.ui.web_panel_password = ""
 
         # MCP: token obligatorio si se exige; si falta, generar uno.
         mcp_on = self.mcp_var.get()

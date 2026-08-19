@@ -46,6 +46,7 @@ Exit codes: `0` OK · `1` error funcional · `2` argumentos · `3` config invál
 | Dato | Ubicación |
 |------|-----------|
 | config.json | `%APPDATA%\WSLManager\` |
+| secrets.json (claves cifradas DPAPI) | `%APPDATA%\WSLManager\` |
 | metrics.db (SQLite) | `%APPDATA%\WSLManager\` |
 | snapshots/ | `%APPDATA%\WSLManager\snapshots\` |
 | backups/ (.wslconfig) | `%APPDATA%\WSLManager\backups\` |
@@ -65,6 +66,9 @@ Los tests unitarios usan mocks (no tocan WSL). Los smoke tests reales están en 
 - API solo loopback por defecto; modo token con scopes `read`/`write`/`admin`:
   `wsl-manager api tokens create --scope write`.
 - Tokens guardados con hash SHA-256 en SQLite.
+- Clave del panel web **obligatoria** y cifrada con **DPAPI** (CurrentUser) en
+  `secrets.json` — nunca queda en claro en `config.json`. Fuera de Windows se
+  usa un fallback XOR solo para dev/test.
 
 ## Estado del plan
 

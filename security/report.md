@@ -57,6 +57,10 @@ La aplicación es **segura para su modelo de despliegue actual (loopback)**. No 
   # HTTP/1.1 200 OK  {"ok":true}
   ```
 - **Recomendación:** token estático opcional (`ui.web_panel_token`) y/o validar `Host` (rechazar cualquier Host ≠ `127.0.0.1:8790` para mitigar DNS rebinding). Documentar el riesgo si se mantiene sin auth.
+- **Estado (2026-08-19): remediado.** El panel web exige **clave obligatoria**
+  cifrada con **DPAPI** en `secrets.json` (`src/utils/secrets.py`); sin clave el
+  panel no arranca (`src/app.py::_web_key_configured`). Todos los endpoints del
+  panel quedan detrás de `_require_auth` (`src/web/web_app.py`).
 
 ### M3 — `mcp.token_required` configurado pero no implementado (Medium)
 
@@ -188,7 +192,7 @@ Correcciones implementadas y verificadas tras la auditoria:
 | L1 `/health` sin rate limit | **CORREGIDO** — `dependencies=[require("read")]` en `/health` | suite de tests verdes (el mecanismo 200x5/429x3 ya estaba probado en endpoints protegidos) |
 | L2 headers ausentes | **CORREGIDO** — middleware `SecurityHeadersMiddleware` en API y panel web; `server_header=False` en uvicorn | `x-content-type-options: nosniff`, `x-frame-options: DENY`, `referrer-policy: no-referrer`, `permissions-policy: ...` presentes; sin `server: uvicorn` |
 | L3 errores de wsl en 500 | **CORREGIDO** — `_fail()` loguea el detalle y devuelve `{"detail":"operacion fallida"}` | `POST .../distros/no-existe/start` → `500` generico (30 bytes) |
-| M2 panel web sin auth | **PENDIENTE** — decision de diseno (loopback). Recomendado: token opcional + validacion de `Host` | — |
+| M2 panel web sin auth | **CORREGIDO (2026-08-19)** — clave **obligatoria** cifrada con DPAPI en `secrets.json`; sin clave el panel no arranca; todos los endpoints tras `_require_auth` | panel sin clave → no arranca; con clave en secrets → `401` sin cookie / `200` con login; tests 59/59 |
 | M3 `mcp.token_required` sin implementar | **PENDIENTE** — implementar chequeo o eliminar el flag | — |
 | L4 SHA-256 sin salt | **PENDIENTE (mejora)** — `pbkdf2_hmac` con salt | — |
 | I1/I2 host/advertencias | **PENDIENTE (mejora)** | — |

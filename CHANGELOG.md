@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.1.1 (2026-08-19) — clave del panel web con DPAPI
+
+- La clave del panel web es **obligatoria** y se guarda cifrada con **DPAPI**
+  (CurrentUser) en `%APPDATA%\WSLManager\secrets.json` (`SecretsStore`,
+  autocontenido con ctypes, cero dependencias). Nunca queda en claro en
+  `config.json`.
+- `src/web/web_app.py`: `_web_panel_password()` resuelve la clave primero desde
+  SecretsStore, con fallback a `cfg.ui.web_panel_password` (tests/legacy).
+- `src/app.py`: `_web_key_configured()` valida la clave (secrets o legacy) antes
+  de arrancar o sincronizar el panel web.
+- Ajustes (GUI): al guardar, la clave se escribe en SecretsStore y se vacía el
+  campo en claro de config.
+- Fuera de Windows: fallback XOR solo para dev/test.
+
 ## v0.1.0 (2026-08-14) — primer release
 
 ### P0 (MVP)

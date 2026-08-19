@@ -60,3 +60,7 @@ Ubicación: `%APPDATA%\WSLManager\config.json` (ver `config/config.example.json`
 - `resources.per_distro` es **experimental**: drop-ins de systemd escritos como root en la distro (`/etc/systemd/system.conf.d/99-wsl-manager.conf`, scope `user` → `user.conf.d`, scope `service` → override del servicio).
 - `alerts.check_interval_seconds` también controla el intervalo del watcher (mínimo 2s).
 - El panel web usa el puerto fijo 8790 (loopback).
+- `ui.web_panel_password` está **deprecado (v0.1.1)**: la clave del panel es
+  obligatoria y se guarda cifrada con DPAPI en `%APPDATA%\WSLManager\secrets.json`
+  (referencia `web_panel_password`). El campo de config solo se usa como respaldo
+  para compatibilidad con tests y configs antiguas.

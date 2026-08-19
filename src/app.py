@@ -280,11 +280,20 @@ def _start_api(ctx, services: dict) -> None:
         log.exception("API REST fallo al iniciar")
 
 
+def _web_key_configured(cfg) -> bool:
+    """Hay clave de panel: en SecretsStore (DPAPI) o en config (legacy)."""
+    from src.utils import secrets as sec
+
+    return bool(cfg.ui.web_panel_password) or sec.SecretsStore().check(
+        "web_panel_password"
+    )
+
+
 def _start_web_panel(ctx, services: dict) -> None:
     cfg = ctx.config
     if not cfg.ui.web_panel_enabled or "web" in services:
         return
-    if not cfg.ui.web_panel_password:
+    if not _web_key_configured(cfg):
         log.error("panel web: activa una clave en Ajustes (obligatoria); no se arranca")
         return
     from src.web.web_app import create_web_app
@@ -305,9 +314,9 @@ def _ensure_services(ctx, services: dict) -> None:
         _start_api(ctx, services)
     elif not cfg.api.enabled and "api" in services:
         _stop_service(services.pop("api", None))
-    if cfg.ui.web_panel_enabled and cfg.ui.web_panel_password and "web" not in services:
+    if cfg.ui.web_panel_enabled and _web_key_configured(cfg) and "web" not in services:
         _start_web_panel(ctx, services)
-    elif not (cfg.ui.web_panel_enabled and cfg.ui.web_panel_password) and "web" in services:
+    elif not (cfg.ui.web_panel_enabled and _web_key_configured(cfg)) and "web" in services:
         _stop_service(services.pop("web", None))
 
 

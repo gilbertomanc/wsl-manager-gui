@@ -14,6 +14,7 @@
 | Límites por distro | systemd drop-ins (experimental) | Scope all/user/service según el plan 9.3 |
 | Autoarranque de distros | HKCU Run → app con `--autostart-distro --delay` | Retraso evita competencia con el login |
 | Single instance | Mutex global (ctypes CreateMutexW) | Evita dobles watchers |
+| Secrets | DPAPI (ctypes CryptProtectData, CurrentUser) en `secrets.json` | Claves sensibles nunca en claro; autocontenido sin dependencias |
 
 ## Scope P0 entregado
 
