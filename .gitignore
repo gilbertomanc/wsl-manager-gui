@@ -23,3 +23,6 @@ snapshots/
 # Windows
 Thumbs.db
 desktop.ini
+
+# Lanzador de autoarranque (rutas absolutas de esta maquina)
+/start_wsl_manager_gui.vbs
