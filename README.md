@@ -69,6 +69,8 @@ Los tests unitarios usan mocks (no tocan WSL). Los smoke tests reales están en 
 - Clave del panel web **obligatoria** y cifrada con **DPAPI** (CurrentUser) en
   `secrets.json` — nunca queda en claro en `config.json`. Fuera de Windows se
   usa un fallback XOR solo para dev/test.
+- **Coexistencia:** port-forwarder-app usa puertos propios (8794 web, 8795 API,
+  8796 MCP), así que ambas apps pueden correr a la vez en la misma máquina.
 
 ## Estado del plan
 
