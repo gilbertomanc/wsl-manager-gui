@@ -162,6 +162,63 @@ src/
 scripts/                   # smoke_check.py, check_environment.ps1, wsl-manager.spec
 ```
 
+## Desinstalación (completa)
+
+Pasos para quitar **toda** huella de la app en Windows. Ejecuta en PowerShell
+**como administrador** cuando se indique.
+
+1. **Detener la app** (cierra la ventana/tray y mata los procesos restantes):
+   ```powershell
+   Stop-Process -Name "wsl-manager" -Force -ErrorAction SilentlyContinue
+   # Si usabas la version antigua desde Python:
+   Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match "wsl_manager.py" } |
+     ForEach-Object { Stop-Process -Id $_.ProcessId -Force }
+   ```
+
+2. **Quitar el autoarranque** (entradas de registro + acceso directo de Startup):
+   ```powershell
+   $run = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
+   Remove-ItemProperty -Path $run -Name "WSLManagerGUI"  -ErrorAction SilentlyContinue
+   Remove-ItemProperty -Path $run -Name "WSLManager-Debian" -ErrorAction SilentlyContinue
+   Remove-Item "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\iniciar_wsl_manager.bat - Acceso directo.lnk" -ErrorAction SilentlyContinue
+   ```
+
+3. **Borrar datos y logs** (config, secrets cifrados, métricas, snapshots, backups):
+   ```powershell
+   Remove-Item "$env:APPDATA\WSLManager"       -Recurse -Force
+   Remove-Item "$env:LOCALAPPDATA\WSLManager"  -Recurse -Force
+   ```
+
+4. **Dar de baja distros WSL creadas por la app** (si dejó distros de prueba;
+   p. ej. la de snapshots). Cuidado: solo las creadas por la app, no las tuyas:
+   ```powershell
+   wsl -l -v                  # identifica distros de prueba
+   wsl --unregister <distro>  # libera su disco virtual (ext4.vhdx)
+   ```
+   Si un `ext4.vhdx` de `snapshots\` está bloqueado, es porque esa distro sigue
+   corriendo: dala de baja antes de borrar la carpeta.
+
+5. **Borrar los ejecutables** (si usabas los `.exe` compilados):
+   ```powershell
+   Remove-Item ".\ejecutables\wsl-manager" -Recurse -Force
+   ```
+
+6. **Borrar el entorno virtual** (si instalaste desde el código):
+   ```powershell
+   Remove-Item ".\proyectos\wsl-manager-gui\.venv" -Recurse -Force
+   ```
+
+7. **Verificar que no queda nada**:
+   ```powershell
+   Get-Process -Name "wsl-manager" -ErrorAction SilentlyContinue   # nada
+   Get-NetTCPConnection -LocalPort 8790,8791,8792 -State Listen -ErrorAction SilentlyContinue  # nada
+   Test-Path "$env:APPDATA\WSLManager"                              # False
+   ```
+
+> El código fuente (`proyectos\wsl-manager-gui`) y los repos de GitHub se
+> conservan; puedes reinstalar cuando quieras siguiendo la sección
+> [Instalación](#instalación).
+
 ## Contribuir
 
 1. Haz un fork del repositorio.
