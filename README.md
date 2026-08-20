@@ -123,6 +123,8 @@ wsl-manager ux run-server          # API en http://127.0.0.1:8791
 ```
 
 - Solo loopback por defecto; modo token con scopes `read`/`write`/`admin`.
+- El token se crea con `wsl-manager api tokens create --scope write` (se muestra
+  una sola vez) o desde **Ajustes de la GUI → API REST → Generar token API**.
 - Tokens guardados con hash SHA-256 en SQLite.
 - Rate limit y auditoría de cada llamada.
 

@@ -113,8 +113,35 @@ class SettingsTab(ttk.Frame):
         self.api_port_var = tk.StringVar(value=str(api.port))
         ttk.Label(form, text="Puerto API:").grid(row=23, column=0, sticky="w")
         ttk.Entry(form, textvariable=self.api_port_var, width=8).grid(row=23, column=1, sticky="w", padx=6)
+        self.api_scope_var = tk.StringVar(value="write")
+        ttk.Label(form, text="Scope del token:").grid(row=24, column=0, sticky="w")
+        ttk.Combobox(form, textvariable=self.api_scope_var, values=["read", "write", "admin"], state="readonly", width=8).grid(row=24, column=1, sticky="w", padx=6)
+        ttk.Button(form, text="Generar token API", bootstyle="info", command=self._gen_api_token).grid(row=25, column=1, sticky="w", padx=6, pady=3)
+        ttk.Label(form, text="El token se genera (no se escribe) y se guarda con hash; se muestra UNA sola vez.", style="Muted.TLabel").grid(row=26, column=0, columnspan=3, sticky="w")
 
-        ttk.Button(form, text="Guardar ajustes", bootstyle="info", command=self._save).grid(row=24, column=0, sticky="w", pady=10)
+        ttk.Button(form, text="Guardar ajustes", bootstyle="info", command=self._save).grid(row=27, column=0, sticky="w", pady=10)
+
+    def _gen_api_token(self) -> None:
+        """Crea un token para la API REST (equivale a 'api tokens create')."""
+        import hashlib
+        import secrets as _sec
+
+        token = _sec.token_urlsafe(32)
+        scope = self.api_scope_var.get()
+        try:
+            self.ctx.metrics.add_token(
+                hashlib.sha256(token.encode()).hexdigest(), scope, None,
+                "generado desde Ajustes",
+            )
+        except Exception as e:  # noqa: BLE001
+            messagebox.showerror("WSL Manager", f"No se pudo guardar el token: {e}")
+            return
+        self.ctx.metrics.log_event("api_token_created", message=f"token API creado (scope {scope})")
+        messagebox.showinfo(
+            "WSL Manager",
+            "Token API generado (scope %s).\n\n%s\n\nGuardalo: NO se volvera a mostrar.\n"
+            "Uso: Authorization: Bearer %s" % (scope, token, token),
+        )
 
     def _save(self) -> None:
         cfg = self.ctx.store.get()
