@@ -24,6 +24,7 @@
 - [Seguridad](#seguridad)
 - [Tests](#tests)
 - [Estructura del proyecto](#estructura-del-proyecto)
+- [Desinstalación (completa)](#desinstalación-completa)
 - [Contribuir](#contribuir)
 - [Licencia](#licencia)
 
