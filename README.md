@@ -16,6 +16,7 @@
 - [Requisitos](#requisitos)
 - [Instalación](#instalación)
 - [Interfaz rápida](#interfaz-rápida)
+- [Capturas de la interfaz](#capturas-de-la-interfaz)
 - [Uso diario (CLI)](#uso-diario-cli)
 - [Panel web](#panel-web)
 - [API REST](#api-rest)
@@ -69,6 +70,17 @@ pip install -e ".[api,dev]"
 
 Flags de la GUI: `--minimized` (inicia al system tray), `--tray-only` (solo tray),
 `--validate-config` (valida la configuración y sale).
+
+## Capturas de la interfaz
+
+| | | |
+|---|---|---|
+| ![Dashboard](assets/screenshots/gui-dashboard.png) | ![Recursos](assets/screenshots/gui-recursos.png) | ![Monitor](assets/screenshots/gui-monitor.png) |
+| *Dashboard: estado de distros, ciclo de vida, IPs* | *Recursos: límites de la VM (.wslconfig)* | *Monitor: métricas y alertas* |
+| ![Configuración](assets/screenshots/gui-configuracion.png) | ![Autoarranque](assets/screenshots/gui-autoarranque.png) | ![Programador](assets/screenshots/gui-programador.png) |
+| *Configuración: editor de .wslconfig con backup* | *Autoarranque de distros con Windows* | *Programador: tareas por días/hora* |
+| ![Perfiles](assets/screenshots/gui-perfiles.png) | ![Logs](assets/screenshots/gui-logs.png) | ![Ajustes](assets/screenshots/gui-ajustes.png) |
+| *Perfiles: capturar/aplicar estados* | *Logs: journal de eventos (SQLite)* | *Ajustes: clave del panel web, MCP y API* |
 
 ## Uso diario (CLI)
 
