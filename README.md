@@ -82,6 +82,12 @@ Flags de la GUI: `--minimized` (inicia al system tray), `--tray-only` (solo tray
 | ![Perfiles](assets/screenshots/gui-perfiles.png) | ![Logs](assets/screenshots/gui-logs.png) | ![Ajustes](assets/screenshots/gui-ajustes.png) |
 | *Perfiles: capturar/aplicar estados* | *Logs: journal de eventos (SQLite)* | *Ajustes: clave del panel web, MCP y API* |
 
+### Panel web (http://127.0.0.1:8790)
+
+![Panel web de WSL Manager](assets/screenshots/web-gui.png)
+
+*Dashboard web con estado en vivo de distros, métricas y alertas. Requiere la clave configurada en Ajustes.*
+
 ## Uso diario (CLI)
 
 ```bash
