@@ -80,7 +80,7 @@ wsl-manager snapshot ubuntu-dev    # snapshot con retención (W6)
 wsl-manager limits global set --memory 8GB --processors 4   # R1
 wsl-manager autostart set ubuntu-dev --delay 5              # W5
 wsl-manager schedule add --name "Iniciar dev" --type distro_start --distro ubuntu-dev --time 09:00
-wsl-manager profile capture dev    # A3
+wsl-manager profile-capture dev  # A3
 wsl-manager status --json
 wsl-manager doctor                 # U8
 ```
@@ -93,9 +93,10 @@ Exit codes: `0` OK · `1` error funcional · `2` argumentos · `3` config invál
 wsl-manager web serve              # dashboard en http://127.0.0.1:8790
 ```
 
-El panel requiere una **clave obligatoria** (se configura en Ajustes de la GUI o
-con los comandos de `secrets`). La clave se guarda **cifrada con DPAPI** en
-`secrets.json` — nunca en claro.
+El panel requiere una **clave obligatoria** que se configura en **Ajustes de la
+GUI** (apartado *Panel web*). La clave se guarda **cifrada con DPAPI** en
+`secrets.json` — nunca en claro. Sin clave configurada, la app no arranca el
+panel y los `/api/*` responden `401`.
 
 ## API REST
 
@@ -160,7 +161,8 @@ src/
 ├── mcp/                   # servidor MCP stdio (JSON-RPC)
 ├── gui/                   # ventana tkinter + tray
 └── utils/                 # subprocess, secrets DPAPI, paths
-scripts/                   # smoke_check.py, check_environment.ps1, wsl-manager.spec
+wsl-manager.spec           # spec de PyInstaller (en la raiz)
+scripts/                   # smoke_check.py, check_environment.ps1, make_icon.py
 ```
 
 ## Desinstalación (completa)
