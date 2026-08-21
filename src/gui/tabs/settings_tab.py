@@ -18,6 +18,27 @@ def _autostart_command() -> str:
     return f'wscript.exe "{vbs}"'
 
 
+def _ensure_autostart_vbs() -> None:
+    """Crea el lanzador VBS (ventana oculta) si no existe: el autoarranque
+    via wscript necesita ese archivo y, sin el, podia abrirse una terminal
+    o un error breve al iniciar sesion."""
+    p = Path(__file__).resolve().parents[3] / "start_wsl_manager_gui.vbs"
+    if p.exists():
+        return
+    content = (
+        "' Lanzador oculto de WSL Manager (auto-generado): sin terminal.\n"
+        "Set sh = CreateObject(\"WScript.Shell\")\n"
+        "Set fso = CreateObject(\"Scripting.FileSystemObject\")\n"
+        "dir = fso.GetParentFolderName(WScript.ScriptFullName)\n"
+        "sh.Run \"\"\"\" & dir & \"\\.venv\\Scripts\\pythonw.exe\"\" \"\"\""
+        " & dir & \"\\src\\app.py\"\" --minimized\", 0, False\n"
+    )
+    try:
+        p.write_text(content, encoding="utf-8")
+    except OSError:
+        pass
+
+
 def autostart_active() -> bool:
     try:
         with OpenKey(HKEY_CURRENT_USER, _RUN_KEY) as k:
@@ -27,6 +48,8 @@ def autostart_active() -> bool:
 
 
 def _set_autostart(active: bool) -> None:
+    if active:
+        _ensure_autostart_vbs()
     with CreateKey(HKEY_CURRENT_USER, _RUN_KEY) as k:
         if active:
             SetValueEx(k, _AUTOSTART_NAME, 0, 1, _autostart_command())  # REG_SZ
